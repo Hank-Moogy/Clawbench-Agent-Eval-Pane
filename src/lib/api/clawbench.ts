@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
-import { generateMockRun, pickWinner, type MockRun } from "./mock-generator";
-import { DEFAULT_RULES, MODELS, type ModelId, type Strategy, type TaskType } from "./constants";
+import { generateMockRun, pickWinner, type MockRun } from "@/lib/clawbench/mock-generator";
+import { DEFAULT_RULES, MODELS, type ModelId, type Strategy, type TaskType } from "@/lib/clawbench/constants";
 
 export interface RunEvalPayload {
   prompt: string;
