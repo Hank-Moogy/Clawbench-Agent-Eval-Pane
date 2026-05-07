@@ -242,7 +242,7 @@ export async function ensureSeed() {
 
   if ((rulesCount ?? 0) === 0) {
     await supabase.from("routing_rules").insert(
-      DEFAULT_RULES.map((r) => ({ ...r, supporting_eval_count: 0 })),
+      DEFAULT_RULES.map((r: typeof DEFAULT_RULES[number]) => ({ ...r, supporting_eval_count: 0 })),
     );
   }
 
@@ -264,7 +264,7 @@ export async function ensureSeed() {
   ];
 
   const settings = await getSettings();
-  const allModels = MODELS.map((m) => m.id) as ModelId[];
+  const allModels = MODELS.map((m: typeof MODELS[number]) => m.id) as ModelId[];
 
   for (const t of seedTasks) {
     const { data: task } = await supabase
