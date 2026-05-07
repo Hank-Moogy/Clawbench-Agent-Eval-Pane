@@ -14,7 +14,251 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      app_settings: {
+        Row: {
+          agent_runner_api_url: string | null
+          api_mode: string
+          created_at: string
+          id: string
+          model_display_names: Json
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          agent_runner_api_url?: string | null
+          api_mode?: string
+          created_at?: string
+          id?: string
+          model_display_names?: Json
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          agent_runner_api_url?: string | null
+          api_mode?: string
+          created_at?: string
+          id?: string
+          model_display_names?: Json
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      dataset_exports: {
+        Row: {
+          avg_quality_score: number | null
+          created_at: string
+          example_count: number | null
+          format: string
+          id: string
+          jsonl_preview: string | null
+          name: string | null
+          selected_run_ids: Json
+          user_id: string | null
+        }
+        Insert: {
+          avg_quality_score?: number | null
+          created_at?: string
+          example_count?: number | null
+          format: string
+          id?: string
+          jsonl_preview?: string | null
+          name?: string | null
+          selected_run_ids?: Json
+          user_id?: string | null
+        }
+        Update: {
+          avg_quality_score?: number | null
+          created_at?: string
+          example_count?: number | null
+          format?: string
+          id?: string
+          jsonl_preview?: string | null
+          name?: string | null
+          selected_run_ids?: Json
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      eval_runs: {
+        Row: {
+          actionability: number | null
+          agent_utility: number | null
+          completeness: number | null
+          correctness: number | null
+          cost_per_quality_point: number | null
+          created_at: string
+          efficiency_score: number | null
+          estimated_cost: number | null
+          format_reliability: number | null
+          id: string
+          input_tokens: number | null
+          is_winner: boolean
+          json_valid: boolean | null
+          judge_explanation: string | null
+          latency_ms: number | null
+          model_display_name: string | null
+          model_id: string
+          output: string | null
+          output_tokens: number | null
+          quality_score: number | null
+          recommendation_reason: string | null
+          reliability_status: string | null
+          status: string
+          task_id: string
+          total_tokens: number | null
+          user_id: string | null
+        }
+        Insert: {
+          actionability?: number | null
+          agent_utility?: number | null
+          completeness?: number | null
+          correctness?: number | null
+          cost_per_quality_point?: number | null
+          created_at?: string
+          efficiency_score?: number | null
+          estimated_cost?: number | null
+          format_reliability?: number | null
+          id?: string
+          input_tokens?: number | null
+          is_winner?: boolean
+          json_valid?: boolean | null
+          judge_explanation?: string | null
+          latency_ms?: number | null
+          model_display_name?: string | null
+          model_id: string
+          output?: string | null
+          output_tokens?: number | null
+          quality_score?: number | null
+          recommendation_reason?: string | null
+          reliability_status?: string | null
+          status?: string
+          task_id: string
+          total_tokens?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          actionability?: number | null
+          agent_utility?: number | null
+          completeness?: number | null
+          correctness?: number | null
+          cost_per_quality_point?: number | null
+          created_at?: string
+          efficiency_score?: number | null
+          estimated_cost?: number | null
+          format_reliability?: number | null
+          id?: string
+          input_tokens?: number | null
+          is_winner?: boolean
+          json_valid?: boolean | null
+          judge_explanation?: string | null
+          latency_ms?: number | null
+          model_display_name?: string | null
+          model_id?: string
+          output?: string | null
+          output_tokens?: number | null
+          quality_score?: number | null
+          recommendation_reason?: string | null
+          reliability_status?: string | null
+          status?: string
+          task_id?: string
+          total_tokens?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "eval_runs_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "eval_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      eval_tasks: {
+        Row: {
+          created_at: string
+          id: string
+          max_tokens: number | null
+          mode: string
+          prompt: string
+          require_json: boolean
+          selected_models: Json
+          strategy: string
+          task_type: string
+          timeout_seconds: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          max_tokens?: number | null
+          mode?: string
+          prompt: string
+          require_json?: boolean
+          selected_models?: Json
+          strategy: string
+          task_type: string
+          timeout_seconds?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          max_tokens?: number | null
+          mode?: string
+          prompt?: string
+          require_json?: boolean
+          selected_models?: Json
+          strategy?: string
+          task_type?: string
+          timeout_seconds?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      routing_rules: {
+        Row: {
+          confidence_threshold: number | null
+          created_at: string
+          escalation_condition: string | null
+          fallback_model: string | null
+          id: string
+          primary_model: string
+          strategy: string | null
+          supporting_eval_count: number
+          task_type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          confidence_threshold?: number | null
+          created_at?: string
+          escalation_condition?: string | null
+          fallback_model?: string | null
+          id?: string
+          primary_model: string
+          strategy?: string | null
+          supporting_eval_count?: number
+          task_type: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          confidence_threshold?: number | null
+          created_at?: string
+          escalation_condition?: string | null
+          fallback_model?: string | null
+          id?: string
+          primary_model?: string
+          strategy?: string | null
+          supporting_eval_count?: number
+          task_type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
