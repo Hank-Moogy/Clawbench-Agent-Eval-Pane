@@ -9,13 +9,43 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as RulesRouteImport } from './routes/rules'
+import { Route as ObservabilityRouteImport } from './routes/observability'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as ExportRouteImport } from './routes/export'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EvalTaskIdRouteImport } from './routes/eval.$taskId'
 
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RulesRoute = RulesRouteImport.update({
+  id: '/rules',
+  path: '/rules',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ObservabilityRoute = ObservabilityRouteImport.update({
+  id: '/observability',
+  path: '/observability',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExportRoute = ExportRouteImport.update({
+  id: '/export',
+  path: '/export',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -31,41 +61,121 @@ const EvalTaskIdRoute = EvalTaskIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/export': typeof ExportRoute
   '/history': typeof HistoryRoute
+  '/leaderboard': typeof LeaderboardRoute
+  '/observability': typeof ObservabilityRoute
+  '/rules': typeof RulesRoute
+  '/settings': typeof SettingsRoute
   '/eval/$taskId': typeof EvalTaskIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/export': typeof ExportRoute
   '/history': typeof HistoryRoute
+  '/leaderboard': typeof LeaderboardRoute
+  '/observability': typeof ObservabilityRoute
+  '/rules': typeof RulesRoute
+  '/settings': typeof SettingsRoute
   '/eval/$taskId': typeof EvalTaskIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/export': typeof ExportRoute
   '/history': typeof HistoryRoute
+  '/leaderboard': typeof LeaderboardRoute
+  '/observability': typeof ObservabilityRoute
+  '/rules': typeof RulesRoute
+  '/settings': typeof SettingsRoute
   '/eval/$taskId': typeof EvalTaskIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/history' | '/eval/$taskId'
+  fullPaths:
+    | '/'
+    | '/export'
+    | '/history'
+    | '/leaderboard'
+    | '/observability'
+    | '/rules'
+    | '/settings'
+    | '/eval/$taskId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/history' | '/eval/$taskId'
-  id: '__root__' | '/' | '/history' | '/eval/$taskId'
+  to:
+    | '/'
+    | '/export'
+    | '/history'
+    | '/leaderboard'
+    | '/observability'
+    | '/rules'
+    | '/settings'
+    | '/eval/$taskId'
+  id:
+    | '__root__'
+    | '/'
+    | '/export'
+    | '/history'
+    | '/leaderboard'
+    | '/observability'
+    | '/rules'
+    | '/settings'
+    | '/eval/$taskId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ExportRoute: typeof ExportRoute
   HistoryRoute: typeof HistoryRoute
+  LeaderboardRoute: typeof LeaderboardRoute
+  ObservabilityRoute: typeof ObservabilityRoute
+  RulesRoute: typeof RulesRoute
+  SettingsRoute: typeof SettingsRoute
   EvalTaskIdRoute: typeof EvalTaskIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rules': {
+      id: '/rules'
+      path: '/rules'
+      fullPath: '/rules'
+      preLoaderRoute: typeof RulesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/observability': {
+      id: '/observability'
+      path: '/observability'
+      fullPath: '/observability'
+      preLoaderRoute: typeof ObservabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/history': {
       id: '/history'
       path: '/history'
       fullPath: '/history'
       preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/export': {
+      id: '/export'
+      path: '/export'
+      fullPath: '/export'
+      preLoaderRoute: typeof ExportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -87,7 +197,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ExportRoute: ExportRoute,
   HistoryRoute: HistoryRoute,
+  LeaderboardRoute: LeaderboardRoute,
+  ObservabilityRoute: ObservabilityRoute,
+  RulesRoute: RulesRoute,
+  SettingsRoute: SettingsRoute,
   EvalTaskIdRoute: EvalTaskIdRoute,
 }
 export const routeTree = rootRouteImport
