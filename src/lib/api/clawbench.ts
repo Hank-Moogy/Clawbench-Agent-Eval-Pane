@@ -49,11 +49,7 @@ export async function saveSettings(patch: Partial<Omit<AppSettings, "id">>) {
   return _settingsCache!;
 }
 
-export async function testConnection(url: string, mode: "mock" | "real") {
-  if (mode === "mock") {
-    await new Promise((r) => setTimeout(r, 600));
-    return { ok: true, message: "Mock mode active. No external call performed." };
-  }
+export async function testConnection(url: string, _mode?: "mock" | "real") {
   if (!url) return { ok: false, message: "No Agent Runner API URL configured." };
   try {
     const res = await fetch(`${url.replace(/\/$/, "")}/health`, { method: "GET" });
