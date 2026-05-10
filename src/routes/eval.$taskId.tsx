@@ -147,11 +147,13 @@ function EvalDetail() {
                     <Stat k="Latency" v={`${(r.latency_ms / 1000).toFixed(1)}s`} />
                     <Stat k="Cost" v={`$${r.estimated_cost?.toFixed(4)}`} />
                   </div>
-                  <div className="mt-3">
-                    <Badge variant="outline" className={r.json_valid ? "border-primary/40 text-primary" : "border-warning/40 text-warning"}>
-                      JSON {r.json_valid ? "valid" : "invalid"}
-                    </Badge>
-                  </div>
+                  {(task.require_json || task.task_type === "structured_json") && (
+                    <div className="mt-3">
+                      <Badge variant="outline" className={r.json_valid ? "border-primary/40 text-primary" : "border-warning/40 text-warning"}>
+                        JSON {r.json_valid ? "valid" : "invalid"}
+                      </Badge>
+                    </div>
+                  )}
                   <div className="mt-3 space-y-1 border-t border-border pt-3 text-[11px] text-muted-foreground">
                     <Sub k="Correctness" v={r.correctness} />
                     <Sub k="Completeness" v={r.completeness} />
