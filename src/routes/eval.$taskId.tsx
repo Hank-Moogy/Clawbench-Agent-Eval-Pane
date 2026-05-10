@@ -199,7 +199,7 @@ function EvalDetail() {
                     <td className="px-3 py-2">{r.output_tokens ?? "—"}</td>
                     <td className="px-3 py-2">{r.estimated_cost ? `$${r.estimated_cost.toFixed(4)}` : "—"}</td>
                     <td className="px-3 py-2">{r.cost_per_quality_point ? `$${r.cost_per_quality_point.toFixed(5)}` : "—"}</td>
-                    <td className="px-3 py-2">{r.json_valid === null ? "—" : r.json_valid ? "✓" : "✗"}</td>
+                    <td className="px-3 py-2">{!(task.require_json || task.task_type === "structured_json") ? "—" : r.json_valid === null ? "—" : r.json_valid ? "✓" : "✗"}</td>
                   </tr>
                 ))}
               </tbody>
