@@ -50,15 +50,14 @@ function SettingsPage() {
       <PageHeader title="Settings" subtitle="Prepare ClawBench for the real Agent Runner API." />
       <div className="grid gap-5 p-6 lg:grid-cols-2">
         <Section title="API mode">
-          <div className="flex items-center justify-between rounded-md border border-border bg-background p-4">
-            <div>
-              <div className="text-sm font-medium">Mock mode</div>
-              <p className="mt-0.5 text-xs text-muted-foreground">Inference is generated locally with realistic distributions.</p>
+          <div className="rounded-md border border-primary/30 bg-primary/5 p-4">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+              Real Agent Runner API
             </div>
-            <Switch checked={mode === "real"} onCheckedChange={(v) => setMode(v ? "real" : "mock")} />
-            <div className="ml-3 text-xs">
-              <span className="font-mono">{mode === "real" ? "Real Agent Runner API" : "Mock"}</span>
-            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Every eval is executed against the configured Agent Runner tunnel. No mock fallback.
+            </p>
           </div>
         </Section>
 
