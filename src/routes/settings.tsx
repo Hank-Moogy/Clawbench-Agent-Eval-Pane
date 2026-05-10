@@ -24,7 +24,7 @@ function SettingsPage() {
   useEffect(() => {
     if (settings) {
       setUrl(settings.agent_runner_api_url ?? "");
-      setMode(settings.api_mode);
+      // mode is always "real"
       setNames(settings.model_display_names ?? {});
     }
   }, [settings]);
