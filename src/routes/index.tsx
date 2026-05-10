@@ -259,7 +259,7 @@ function RunEvalPage() {
               <Row k="Strategy" v={STRATEGIES.find((s) => s.id === strategy)?.label} />
               <Row k="Models" v={`${models.length} selected`} />
               <Row k="Estimated runs" v={models.length.toString()} />
-              <Row k="API mode" v="Mock" />
+              <Row k="API mode" v="Real" />
             </dl>
           </div>
 
