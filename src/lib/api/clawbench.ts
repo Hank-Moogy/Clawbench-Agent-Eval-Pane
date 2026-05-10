@@ -30,7 +30,7 @@ export async function getSettings(): Promise<AppSettings> {
   }
   const { data: created } = await supabase
     .from("app_settings")
-    .insert({ api_mode: "mock" })
+    .insert({ api_mode: "real" })
     .select("*")
     .single();
   _settingsCache = created as unknown as AppSettings;
