@@ -90,7 +90,7 @@ function RunEvalPage() {
         subtitle="Benchmark OpenClaw tasks across Nebius Token Factory models."
         actions={
           <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
-            Mock mode enabled
+            Real mode
           </Badge>
         }
       />
