@@ -90,7 +90,7 @@ function RunEvalPage() {
         subtitle="Benchmark OpenClaw tasks across Nebius Token Factory models."
         actions={
           <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
-            Mock mode enabled
+            Real mode
           </Badge>
         }
       />
@@ -176,7 +176,7 @@ function RunEvalPage() {
                       <Input type="number" value={maxTokens} onChange={(e) => setMaxTokens(+e.target.value)} className="mt-1.5" />
                     </div>
                     <div>
-                      <Label className="text-xs">Judge model (mocked)</Label>
+                      <Label className="text-xs">Judge model</Label>
                       <Select value={judgeModel} onValueChange={setJudgeModel}>
                         <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
                         <SelectContent>
@@ -259,7 +259,7 @@ function RunEvalPage() {
               <Row k="Strategy" v={STRATEGIES.find((s) => s.id === strategy)?.label} />
               <Row k="Models" v={`${models.length} selected`} />
               <Row k="Estimated runs" v={models.length.toString()} />
-              <Row k="API mode" v="Mock" />
+              <Row k="API mode" v="Real" />
             </dl>
           </div>
 

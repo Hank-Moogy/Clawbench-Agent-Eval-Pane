@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/clawbench/page-header";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
+
 import { MODELS } from "@/lib/clawbench/constants";
 import { ShieldAlert, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -17,14 +17,14 @@ function SettingsPage() {
   const qc = useQueryClient();
   const { data: settings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const [url, setUrl] = useState("");
-  const [mode, setMode] = useState<"mock" | "real">("mock");
+  const mode: "real" = "real";
   const [names, setNames] = useState<Record<string, string>>({});
   const [lastTest, setLastTest] = useState<{ ok: boolean; message: string; at: string } | null>(null);
 
   useEffect(() => {
     if (settings) {
       setUrl(settings.agent_runner_api_url ?? "");
-      setMode(settings.api_mode);
+      // mode is always "real"
       setNames(settings.model_display_names ?? {});
     }
   }, [settings]);
@@ -50,15 +50,14 @@ function SettingsPage() {
       <PageHeader title="Settings" subtitle="Prepare ClawBench for the real Agent Runner API." />
       <div className="grid gap-5 p-6 lg:grid-cols-2">
         <Section title="API mode">
-          <div className="flex items-center justify-between rounded-md border border-border bg-background p-4">
-            <div>
-              <div className="text-sm font-medium">Mock mode</div>
-              <p className="mt-0.5 text-xs text-muted-foreground">Inference is generated locally with realistic distributions.</p>
+          <div className="rounded-md border border-primary/30 bg-primary/5 p-4">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+              Real Agent Runner API
             </div>
-            <Switch checked={mode === "real"} onCheckedChange={(v) => setMode(v ? "real" : "mock")} />
-            <div className="ml-3 text-xs">
-              <span className="font-mono">{mode === "real" ? "Real Agent Runner API" : "Mock"}</span>
-            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Every eval is executed against the configured Agent Runner tunnel. No mock fallback.
+            </p>
           </div>
         </Section>
 
