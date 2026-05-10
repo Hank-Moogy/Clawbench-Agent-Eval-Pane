@@ -80,28 +80,17 @@ export async function runEval(payload: RunEvalPayload): Promise<{ taskId: string
     .single();
   if (taskErr || !task) throw taskErr ?? new Error("Failed to create task");
 
-  // 2. Generate runs
-  let runs: MockRun[];
-  if (mode === "real" && settings.agent_runner_api_url) {
-    try {
-      const res = await fetch(`${settings.agent_runner_api_url.replace(/\/$/, "")}/run-eval`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error(`Agent Runner ${res.status}`);
-      runs = (await res.json()).runs as MockRun[];
-    } catch {
-      // fallback to mock if real API fails
-      runs = payload.selected_models.map((m) =>
-        generateMockRun(m, payload.task_type, payload.prompt, settings.model_display_names, payload.require_json),
-      );
-    }
-  } else {
-    runs = payload.selected_models.map((m) =>
-      generateMockRun(m, payload.task_type, payload.prompt, settings.model_display_names, payload.require_json),
-    );
+  // 2. Call the real Agent Runner API
+  if (!settings.agent_runner_api_url) {
+    throw new Error("Agent Runner API URL not configured. Set it in Settings.");
   }
+  const res = await fetch(`${settings.agent_runner_api_url.replace(/\/$/, "")}/run-eval`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`Agent Runner returned ${res.status}`);
+  const runs = (await res.json()).runs as MockRun[];
 
   pickWinner(runs, payload.strategy);
 
