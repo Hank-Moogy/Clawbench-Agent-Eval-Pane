@@ -176,7 +176,7 @@ function RunEvalPage() {
                       <Input type="number" value={maxTokens} onChange={(e) => setMaxTokens(+e.target.value)} className="mt-1.5" />
                     </div>
                     <div>
-                      <Label className="text-xs">Judge model (mocked)</Label>
+                      <Label className="text-xs">Judge model</Label>
                       <Select value={judgeModel} onValueChange={setJudgeModel}>
                         <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
                         <SelectContent>
