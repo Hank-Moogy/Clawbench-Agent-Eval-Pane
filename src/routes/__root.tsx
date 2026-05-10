@@ -103,7 +103,7 @@ function RootComponent() {
               <div className="ml-auto flex items-center gap-2">
                 <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
                   <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                  Mock mode
+                  Real mode
                 </Badge>
               </div>
             </header>
