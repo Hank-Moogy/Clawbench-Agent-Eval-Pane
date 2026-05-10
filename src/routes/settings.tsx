@@ -17,7 +17,7 @@ function SettingsPage() {
   const qc = useQueryClient();
   const { data: settings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const [url, setUrl] = useState("");
-  const [mode, setMode] = useState<"mock" | "real">("mock");
+  const mode: "real" = "real";
   const [names, setNames] = useState<Record<string, string>>({});
   const [lastTest, setLastTest] = useState<{ ok: boolean; message: string; at: string } | null>(null);
 
