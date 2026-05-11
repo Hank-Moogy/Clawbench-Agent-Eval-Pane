@@ -88,7 +88,7 @@ export function generateMockRun(
   modelNames?: Record<string, string>,
   forceRequireJson = false,
 ): MockRun {
-  const r = RANGES[modelId];
+  const r = RANGES[modelId] ?? DEFAULT_RANGE;
   const failed = Math.random() < r.failure;
   const display = modelDisplayName(modelId, modelNames);
 
