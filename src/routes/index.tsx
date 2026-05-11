@@ -51,6 +51,9 @@ function RunEvalPage() {
   const [judgeModel, setJudgeModel] = useState("deepseek");
   const [autoSave, setAutoSave] = useState(true);
   const [step, setStep] = useState(-1);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const builtInIds = MODELS.map((m) => m.id) as string[];
+  const extraModels = models.filter((m) => !builtInIds.includes(m));
 
   const mut = useMutation({
     mutationFn: async () => {
