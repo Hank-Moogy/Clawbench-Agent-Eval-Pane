@@ -21,9 +21,11 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/clawbench/page-header";
-import { EXAMPLE_PROMPTS, MODELS, STRATEGIES, TASK_TYPES, type ModelId, type Strategy, type TaskType } from "@/lib/clawbench/constants";
+import { EXAMPLE_PROMPTS, MODELS, NEBIUS_CATALOG, STRATEGIES, TASK_TYPES, type ModelId, type Strategy, type TaskType } from "@/lib/clawbench/constants";
 import { runEval } from "@/lib/api/clawbench";
-import { CheckCircle2, Loader2, PlayCircle, Sparkles, Trash2 } from "lucide-react";
+import { CheckCircle2, Loader2, PlayCircle, Plus, Sparkles, Trash2, X } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({ component: RunEvalPage });
@@ -49,6 +51,9 @@ function RunEvalPage() {
   const [judgeModel, setJudgeModel] = useState("deepseek");
   const [autoSave, setAutoSave] = useState(true);
   const [step, setStep] = useState(-1);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const builtInIds = MODELS.map((m) => m.id) as string[];
+  const extraModels = models.filter((m) => !builtInIds.includes(m));
 
   const mut = useMutation({
     mutationFn: async () => {
@@ -158,6 +163,88 @@ function RunEvalPage() {
                   );
                 })}
               </div>
+
+              {/* Extra Nebius models as chips */}
+              {extraModels.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {extraModels.map((id) => {
+                    const meta = NEBIUS_CATALOG.find((c) => c.id === id);
+                    return (
+                      <span
+                        key={id}
+                        className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-2 py-1 text-xs font-mono text-primary"
+                      >
+                        {meta?.name ?? id}
+                        <button
+                          type="button"
+                          disabled={isRunning}
+                          onClick={() => toggleModel(id)}
+                          className="rounded-sm hover:bg-primary/20"
+                          aria-label={`Remove ${id}`}
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Add Nebius model search */}
+              <div className="mt-3">
+                <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={isRunning}
+                      className="gap-1.5"
+                    >
+                      <Plus className="h-3.5 w-3.5" /> Add Nebius model
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[420px] p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder="Search Nebius models (e.g. llama, qwen, deepseek)…" />
+                      <CommandList className="max-h-80">
+                        <CommandEmpty>No models found.</CommandEmpty>
+                        {Array.from(new Set(NEBIUS_CATALOG.map((m) => m.family))).map((family) => (
+                          <CommandGroup key={family} heading={family}>
+                            {NEBIUS_CATALOG.filter((m) => m.family === family).map((m) => {
+                              const active = models.includes(m.id);
+                              return (
+                                <CommandItem
+                                  key={m.id}
+                                  value={`${m.name} ${m.id} ${(m.tags ?? []).join(" ")}`}
+                                  onSelect={() => {
+                                    toggleModel(m.id);
+                                  }}
+                                  className="flex items-center justify-between gap-2"
+                                >
+                                  <div className="min-w-0">
+                                    <div className="truncate text-sm">{m.name}</div>
+                                    <div className="truncate font-mono text-[10px] text-muted-foreground">{m.id}</div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    {m.tags?.slice(0, 2).map((t) => (
+                                      <span key={t} className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">{t}</span>
+                                    ))}
+                                    {active && <CheckCircle2 className="h-4 w-4 text-primary" />}
+                                  </div>
+                                </CommandItem>
+                              );
+                            })}
+                          </CommandGroup>
+                        ))}
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                <p className="mt-2 text-[11px] text-muted-foreground">
+                  Selected IDs are forwarded as-is to the Agent Runner. Make sure your runner accepts the Nebius model string.
+                </p>
+              </div>
             </div>
 
             <Accordion type="single" collapsible className="mt-5">
@@ -228,7 +315,7 @@ function RunEvalPage() {
               </div>
               <div className="mt-4 grid gap-2">
                 {models.map((m) => {
-                  const name = MODELS.find((x) => x.id === m)?.name;
+                  const name = MODELS.find((x) => x.id === m)?.name ?? NEBIUS_CATALOG.find((c) => c.id === m)?.name ?? m;
                   return (
                     <div key={m} className="flex items-center justify-between rounded-md border border-border bg-background px-3 py-2 font-mono text-xs">
                       <span>{name}</span>
