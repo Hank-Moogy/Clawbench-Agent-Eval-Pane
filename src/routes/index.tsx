@@ -21,9 +21,11 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/clawbench/page-header";
-import { EXAMPLE_PROMPTS, MODELS, STRATEGIES, TASK_TYPES, type ModelId, type Strategy, type TaskType } from "@/lib/clawbench/constants";
+import { EXAMPLE_PROMPTS, MODELS, NEBIUS_CATALOG, STRATEGIES, TASK_TYPES, type ModelId, type Strategy, type TaskType } from "@/lib/clawbench/constants";
 import { runEval } from "@/lib/api/clawbench";
-import { CheckCircle2, Loader2, PlayCircle, Sparkles, Trash2 } from "lucide-react";
+import { CheckCircle2, Loader2, PlayCircle, Plus, Sparkles, Trash2, X } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({ component: RunEvalPage });
