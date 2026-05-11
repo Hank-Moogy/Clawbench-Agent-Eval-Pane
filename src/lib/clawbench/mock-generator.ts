@@ -1,12 +1,14 @@
 import { MODELS, type ModelId, type Strategy, type TaskType } from "./constants";
 
-const RANGES: Record<ModelId, {
+type Range = {
   quality: [number, number];
   latencyMs: [number, number];
   cost: [number, number];
-  jsonValid: number; // probability
-  failure: number; // probability of failure/timeout
-}> = {
+  jsonValid: number;
+  failure: number;
+};
+const DEFAULT_RANGE: Range = { quality: [3.8, 4.5], latencyMs: [6000, 14000], cost: [0.002, 0.006], jsonValid: 0.85, failure: 0.04 };
+const RANGES: Record<string, Range> = {
   kimi: { quality: [4.1, 4.8], latencyMs: [7000, 11000], cost: [0.0025, 0.0045], jsonValid: 0.9, failure: 0.03 },
   deepseek: { quality: [4.4, 4.9], latencyMs: [12000, 22000], cost: [0.005, 0.010], jsonValid: 0.85, failure: 0.05 },
   llama70b: { quality: [3.5, 4.3], latencyMs: [4000, 8000], cost: [0.0015, 0.003], jsonValid: 0.8, failure: 0.04 },
