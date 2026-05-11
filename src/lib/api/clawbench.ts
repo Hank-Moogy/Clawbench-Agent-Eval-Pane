@@ -231,43 +231,6 @@ export async function ensureSeed() {
     );
   }
 
-  if ((count ?? 0) > 0) return;
-
-  const seedTasks: { prompt: string; task_type: TaskType; strategy: Strategy }[] = [
-    { prompt: "Debug this OpenClaw Gateway token mismatch and provide terminal commands to fix it.", task_type: "debugging", strategy: "best_balance" },
-    { prompt: "Trace why our agent runner returns 502 on cold start and propose a fix.", task_type: "debugging", strategy: "best_quality" },
-    { prompt: "Refactor this fetch wrapper to support retries with exponential backoff in TypeScript.", task_type: "coding", strategy: "best_balance" },
-    { prompt: "Implement a TanStack server function that aggregates eval runs by model.", task_type: "coding", strategy: "best_balance" },
-    { prompt: "Design a model routing strategy for an agent that mixes reasoning and tool use.", task_type: "reasoning", strategy: "best_quality" },
-    { prompt: "Compare three approaches for handling judge model disagreement in eval pipelines.", task_type: "reasoning", strategy: "best_quality" },
-    { prompt: "Summarize this incident: token rotation drift caused 4xx spike for 6 minutes.", task_type: "summarization", strategy: "lowest_cost" },
-    { prompt: "Summarize this design doc on the OpenClaw evaluation control plane.", task_type: "summarization", strategy: "lowest_latency" },
-    { prompt: "Generate a strict JSON workflow with steps, owner, status for the eval pipeline.", task_type: "structured_json", strategy: "best_structured" },
-    { prompt: "Return JSON describing a routing rule with task_type, primary, fallback, escalation.", task_type: "structured_json", strategy: "best_structured" },
-    { prompt: "Write a product spec for an internal AI eval dashboard for operators.", task_type: "product_spec", strategy: "best_quality" },
-    { prompt: "Draft a product spec for a Cloudflare-tunneled agent runner with /run-eval and /health.", task_type: "product_spec", strategy: "best_balance" },
-  ];
-
-  const settings = await getSettings();
-  const allModels = MODELS.map((m: typeof MODELS[number]) => m.id) as ModelId[];
-
-  for (const t of seedTasks) {
-    const { data: task } = await supabase
-      .from("eval_tasks")
-      .insert({
-        prompt: t.prompt,
-        task_type: t.task_type,
-        strategy: t.strategy,
-        selected_models: allModels,
-        mode: "mock",
-      })
-      .select("*")
-      .single();
-    if (!task) continue;
-    const runs = allModels.map((m) =>
-      generateMockRun(m, t.task_type, t.prompt, settings.model_display_names, t.task_type === "structured_json"),
-    );
-    pickWinner(runs, t.strategy);
-    await supabase.from("eval_runs").insert(runs.map((r) => ({ ...r, task_id: task.id })));
-  }
+  // Mock eval task seeding disabled — only real Agent Runner data is used.
+  void count;
 }
