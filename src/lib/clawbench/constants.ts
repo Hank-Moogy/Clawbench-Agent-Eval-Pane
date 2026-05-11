@@ -4,7 +4,49 @@ export const MODELS = [
   { id: "llama70b", name: "Llama 3.3 70B", positioning: "Fast general baseline, low cost" },
 ] as const;
 
-export type ModelId = (typeof MODELS)[number]["id"];
+// Widened to string so users can add arbitrary Nebius Token Factory model IDs at runtime.
+export type ModelId = string;
+
+// Curated catalog of Nebius Token Factory models. The `id` is the exact string
+// the Agent Runner forwards to Nebius. Keep names short for chips.
+export const NEBIUS_CATALOG: { id: string; name: string; family: string; tags?: string[] }[] = [
+  // Meta Llama
+  { id: "meta-llama/Meta-Llama-3.1-8B-Instruct", name: "Llama 3.1 8B Instruct", family: "Meta", tags: ["fast", "cheap"] },
+  { id: "meta-llama/Meta-Llama-3.1-70B-Instruct", name: "Llama 3.1 70B Instruct", family: "Meta", tags: ["balanced"] },
+  { id: "meta-llama/Meta-Llama-3.1-405B-Instruct", name: "Llama 3.1 405B Instruct", family: "Meta", tags: ["quality"] },
+  { id: "meta-llama/Llama-3.3-70B-Instruct", name: "Llama 3.3 70B Instruct", family: "Meta", tags: ["balanced"] },
+  { id: "meta-llama/Llama-3.2-1B-Instruct", name: "Llama 3.2 1B Instruct", family: "Meta", tags: ["fast", "cheap"] },
+  { id: "meta-llama/Llama-3.2-3B-Instruct", name: "Llama 3.2 3B Instruct", family: "Meta", tags: ["fast", "cheap"] },
+  // DeepSeek
+  { id: "deepseek-ai/DeepSeek-R1", name: "DeepSeek R1", family: "DeepSeek", tags: ["reasoning"] },
+  { id: "deepseek-ai/DeepSeek-R1-Distill-Llama-70B", name: "DeepSeek R1 Distill Llama 70B", family: "DeepSeek", tags: ["reasoning"] },
+  { id: "deepseek-ai/DeepSeek-V3", name: "DeepSeek V3", family: "DeepSeek", tags: ["quality"] },
+  { id: "deepseek-ai/DeepSeek-V3-0324", name: "DeepSeek V3 0324", family: "DeepSeek", tags: ["quality"] },
+  // Qwen
+  { id: "Qwen/Qwen2.5-72B-Instruct", name: "Qwen 2.5 72B Instruct", family: "Qwen", tags: ["balanced"] },
+  { id: "Qwen/Qwen2.5-32B-Instruct", name: "Qwen 2.5 32B Instruct", family: "Qwen" },
+  { id: "Qwen/Qwen2.5-Coder-32B-Instruct", name: "Qwen 2.5 Coder 32B", family: "Qwen", tags: ["coding"] },
+  { id: "Qwen/Qwen2.5-Coder-7B-Instruct", name: "Qwen 2.5 Coder 7B", family: "Qwen", tags: ["coding", "fast"] },
+  { id: "Qwen/QwQ-32B", name: "QwQ 32B", family: "Qwen", tags: ["reasoning"] },
+  { id: "Qwen/QwQ-32B-Preview", name: "QwQ 32B Preview", family: "Qwen", tags: ["reasoning"] },
+  // Mistral
+  { id: "mistralai/Mistral-Nemo-Instruct-2407", name: "Mistral Nemo Instruct", family: "Mistral", tags: ["balanced"] },
+  { id: "mistralai/Mixtral-8x7B-Instruct-v0.1", name: "Mixtral 8x7B Instruct", family: "Mistral" },
+  { id: "mistralai/Mixtral-8x22B-Instruct-v0.1", name: "Mixtral 8x22B Instruct", family: "Mistral", tags: ["quality"] },
+  // Moonshot / Kimi
+  { id: "moonshotai/Kimi-K2-Instruct", name: "Kimi K2 Instruct", family: "Moonshot", tags: ["agent"] },
+  // Microsoft
+  { id: "microsoft/Phi-3.5-mini-instruct", name: "Phi 3.5 Mini Instruct", family: "Microsoft", tags: ["fast", "cheap"] },
+  { id: "microsoft/Phi-3.5-MoE-instruct", name: "Phi 3.5 MoE Instruct", family: "Microsoft" },
+  // NVIDIA
+  { id: "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF", name: "Nemotron 70B", family: "NVIDIA", tags: ["quality"] },
+  // Google
+  { id: "google/gemma-2-9b-it", name: "Gemma 2 9B IT", family: "Google", tags: ["fast"] },
+  { id: "google/gemma-2-27b-it", name: "Gemma 2 27B IT", family: "Google" },
+  // Allen AI
+  { id: "allenai/OLMo-2-1124-13B-Instruct", name: "OLMo 2 13B Instruct", family: "Allen AI" },
+];
+
 
 export const TASK_TYPES = [
   { id: "debugging", label: "Debugging" },
