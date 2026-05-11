@@ -315,7 +315,7 @@ function RunEvalPage() {
               </div>
               <div className="mt-4 grid gap-2">
                 {models.map((m) => {
-                  const name = MODELS.find((x) => x.id === m)?.name;
+                  const name = MODELS.find((x) => x.id === m)?.name ?? NEBIUS_CATALOG.find((c) => c.id === m)?.name ?? m;
                   return (
                     <div key={m} className="flex items-center justify-between rounded-md border border-border bg-background px-3 py-2 font-mono text-xs">
                       <span>{name}</span>
