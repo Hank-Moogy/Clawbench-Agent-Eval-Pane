@@ -44,12 +44,9 @@ function LandingPage() {
       <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
           <Link to="/" className="flex items-center gap-2">
-            <img
-              src={clawbenchLogo}
-              alt="ClawBench"
-              className="h-8 w-auto"
-            />
+            <span className="text-2xl" role="img" aria-label="shrimp">🦐</span>
             <div className="hidden sm:block">
+              <div className="text-sm font-semibold tracking-tight">ClawBench</div>
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
                 Agent eval control plane
               </div>
