@@ -29,7 +29,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/")({ component: RunEvalPage });
+export const Route = createFileRoute("/run")({ component: RunEvalPage });
 
 const STEPS = [
   "Preparing task",
