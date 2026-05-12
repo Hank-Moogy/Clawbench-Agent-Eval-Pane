@@ -50,10 +50,14 @@ export function AgentTunnelOnboarding() {
   const [copied, setCopied] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const [showKey, setShowKey] = useState(false);
+  const [tunnelUrl, setTunnelUrl] = useState("");
 
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
+    if (typeof window === "undefined") return;
+    const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) setApiKey(stored);
+    const t = localStorage.getItem(TUNNEL_KEY);
+    if (t) setTunnelUrl(t);
   }, []);
 
   const saveKey = (v: string) => {
@@ -61,6 +65,25 @@ export function AgentTunnelOnboarding() {
     if (typeof window !== "undefined") {
       if (v) localStorage.setItem(STORAGE_KEY, v);
       else localStorage.removeItem(STORAGE_KEY);
+    }
+  };
+
+  const saveTunnel = (v: string) => {
+    setTunnelUrl(v);
+    if (typeof window !== "undefined") {
+      if (v) localStorage.setItem(TUNNEL_KEY, v);
+      else localStorage.removeItem(TUNNEL_KEY);
+    }
+  };
+
+  const persistTunnel = async () => {
+    const trimmed = tunnelUrl.trim().replace(/\/$/, "");
+    if (!trimmed) return;
+    try {
+      await saveSettings({ agent_runner_api_url: trimmed });
+      toast.success("Tunnel URL saved");
+    } catch {
+      toast.error("Failed to save tunnel URL");
     }
   };
 
