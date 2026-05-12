@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
+  Check as CheckIcon,
   Gauge,
   KeyRound,
   PlayCircle,
@@ -12,6 +13,8 @@ import {
   Trophy,
   FileDown,
 } from "lucide-react";
+
+const Check = () => <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />;
 
 export const Route = createFileRoute("/")({
   head: () => ({
