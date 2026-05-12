@@ -148,19 +148,36 @@ export interface HistoryFilters {
 }
 
 export async function getEvalHistory(filters: HistoryFilters = {}) {
-  let q = supabase.from("eval_tasks").select("*, eval_runs(*)").order("created_at", { ascending: false }).limit(200);
-  if (filters.task_type) q = q.eq("task_type", filters.task_type);
-  if (filters.strategy) q = q.eq("strategy", filters.strategy);
-  const { data } = await q;
-  let rows = (data ?? []).map((t: any) => {
-    const winner = (t.eval_runs ?? []).find((r: any) => r.is_winner) ?? null;
-    const completed = (t.eval_runs ?? []).filter((r: any) => r.reliability_status === "completed");
-    const avgLatency = completed.length
-      ? Math.round(completed.reduce((s: number, r: any) => s + (r.latency_ms ?? 0), 0) / completed.length)
-      : null;
-    const totalCost = (t.eval_runs ?? []).reduce((s: number, r: any) => s + (r.estimated_cost ?? 0), 0);
-    return { task: t, winner, avgLatency, totalCost };
-  });
+  let rows: { task: any; winner: any; avgLatency: number | null; totalCost: number }[];
+
+  if (isMockMode()) {
+    rows = listMockBundles().map((b) => {
+      const winner = b.runs.find((r) => r.is_winner) ?? null;
+      const completed = b.runs.filter((r) => r.reliability_status === "completed");
+      const avgLatency = completed.length
+        ? Math.round(completed.reduce((s, r) => s + (r.latency_ms ?? 0), 0) / completed.length)
+        : null;
+      const totalCost = b.runs.reduce((s, r) => s + (r.estimated_cost ?? 0), 0);
+      return { task: { ...b.task, eval_runs: b.runs }, winner, avgLatency, totalCost };
+    });
+    if (filters.task_type) rows = rows.filter((r) => r.task.task_type === filters.task_type);
+    if (filters.strategy) rows = rows.filter((r) => r.task.strategy === filters.strategy);
+  } else {
+    let q = supabase.from("eval_tasks").select("*, eval_runs(*)").order("created_at", { ascending: false }).limit(200);
+    if (filters.task_type) q = q.eq("task_type", filters.task_type);
+    if (filters.strategy) q = q.eq("strategy", filters.strategy);
+    const { data } = await q;
+    rows = (data ?? []).map((t: any) => {
+      const winner = (t.eval_runs ?? []).find((r: any) => r.is_winner) ?? null;
+      const completed = (t.eval_runs ?? []).filter((r: any) => r.reliability_status === "completed");
+      const avgLatency = completed.length
+        ? Math.round(completed.reduce((s: number, r: any) => s + (r.latency_ms ?? 0), 0) / completed.length)
+        : null;
+      const totalCost = (t.eval_runs ?? []).reduce((s: number, r: any) => s + (r.estimated_cost ?? 0), 0);
+      return { task: t, winner, avgLatency, totalCost };
+    });
+  }
+
   if (filters.winning_model) rows = rows.filter((r) => r.winner?.model_id === filters.winning_model);
   if (filters.status) rows = rows.filter((r) => r.winner?.reliability_status === filters.status);
   if (filters.min_score) rows = rows.filter((r) => (r.winner?.quality_score ?? 0) >= filters.min_score!);
@@ -168,11 +185,25 @@ export async function getEvalHistory(filters: HistoryFilters = {}) {
 }
 
 export async function getAllRuns() {
+  if (isMockMode()) {
+    return listMockBundles().flatMap((b) =>
+      b.runs.map((r) => ({
+        ...r,
+        eval_tasks: {
+          task_type: b.task.task_type,
+          prompt: b.task.prompt,
+          strategy: b.task.strategy,
+          created_at: b.task.created_at,
+        },
+      })),
+    );
+  }
   const { data } = await supabase.from("eval_runs").select("*, eval_tasks(task_type, prompt, strategy, created_at)");
   return data ?? [];
 }
 
 export async function getRoutingRules() {
+  if (isMockMode()) return getMockRoutingRules();
   const { data } = await supabase.from("routing_rules").select("*").order("task_type");
   return data ?? [];
 }
