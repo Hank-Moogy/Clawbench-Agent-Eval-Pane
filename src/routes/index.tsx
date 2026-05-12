@@ -14,6 +14,7 @@ import {
   FileDown,
 } from "lucide-react";
 import clawbenchLogo from "@/assets/clawbench-logo.png";
+import clawbenchHero from "@/assets/clawbench-hero.png";
 
 const Check = () => <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />;
 
@@ -72,9 +73,9 @@ function LandingPage() {
         <section className="border-b border-border">
           <div className="mx-auto max-w-6xl px-6 py-20 text-center">
             <img
-              src={clawbenchLogo}
+              src={clawbenchHero}
               alt="ClawBench"
-              className="mx-auto mb-8 h-20 w-auto sm:h-24"
+              className="mx-auto mb-8 h-28 w-auto sm:h-36"
             />
             <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               <Sparkles className="h-3 w-3" /> Powered by Nebius Token Factory
