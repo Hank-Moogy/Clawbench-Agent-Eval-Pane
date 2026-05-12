@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/clawbench/page-header";
+import { AgentTunnelOnboarding } from "@/components/clawbench/agent-tunnel-onboarding";
 import { EXAMPLE_PROMPTS, MODELS, NEBIUS_CATALOG, STRATEGIES, TASK_TYPES, type ModelId, type Strategy, type TaskType } from "@/lib/clawbench/constants";
 import { runEval } from "@/lib/api/clawbench";
 import { CheckCircle2, Loader2, PlayCircle, Plus, Sparkles, Trash2, X } from "lucide-react";
