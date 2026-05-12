@@ -10,6 +10,7 @@ import {
   Sparkles,
   Terminal,
   Trophy,
+  FileDown,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
