@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
+  Check as CheckIcon,
   Gauge,
   KeyRound,
   PlayCircle,
@@ -10,7 +11,10 @@ import {
   Sparkles,
   Terminal,
   Trophy,
+  FileDown,
 } from "lucide-react";
+
+const Check = () => <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -73,7 +77,8 @@ function LandingPage() {
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
               ClawBench benchmarks your agent across open-weight models on Nebius, scores every
-              output, and generates routing rules so the cheapest capable model handles each task.
+              output, and exports a <code className="rounded bg-muted px-1 py-0.5 font-mono text-[0.85em]">routing.md</code> your
+              coding agent reads natively to pick the best model per task.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link to="/auth">
@@ -115,11 +120,53 @@ function LandingPage() {
               />
               <Step
                 n={3}
-                icon={<RouteIcon className="h-5 w-5" />}
-                title="Ship a routing policy"
-                body="ClawBench turns the winning models into routing rules: primary, fallback, and escalation conditions per task type — ready to wire into your agent."
+                icon={<FileDown className="h-5 w-5" />}
+                title="Export routing.md for your agent"
+                body="ClawBench turns the winning models into a routing.md file — primary, fallback, and escalation rules per task type. Copy it into Cursor, Claude Code, or Lovable and your agent routes every prompt to the right model."
               />
             </div>
+          </div>
+        </section>
+
+        {/* What you get — routing.md preview */}
+        <section className="border-b border-border bg-muted/20">
+          <div className="mx-auto grid max-w-6xl items-center gap-10 px-6 py-20 lg:grid-cols-2">
+            <div>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-xs font-medium">
+                <FileDown className="h-3 w-3" /> The deliverable
+              </span>
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight">
+                One file. Drop it into any coding agent.
+              </h2>
+              <p className="mt-3 text-sm text-muted-foreground">
+                <code className="rounded bg-muted px-1 py-0.5 font-mono text-[0.85em]">routing.md</code> is plain
+                markdown — a summary table, per-task rules, and a decision algorithm your agent can follow without
+                any SDK, plugin, or custom integration.
+              </p>
+              <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
+                <li className="flex gap-2"><Check /> Works with Cursor, Claude Code, Lovable, Continue, and any agent that reads context files.</li>
+                <li className="flex gap-2"><Check /> Re-export anytime as your evals improve — version it in your repo.</li>
+                <li className="flex gap-2"><Check /> Human-readable, so you can review and tweak before shipping.</li>
+              </ul>
+            </div>
+            <pre className="overflow-auto rounded-lg border border-border bg-background p-5 font-mono text-[11px] leading-relaxed text-foreground shadow-sm">
+{`# Routing Rules
+
+## Summary
+| Task type     | Primary       | Fallback      |
+| ------------- | ------------- | ------------- |
+| Debugging     | DeepSeek R1   | Kimi K2.5     |
+| Coding        | Qwen Coder 32B| Llama 3.3 70B |
+| Reasoning     | DeepSeek R1   | Llama 3.1 405B|
+
+## Decision algorithm
+function route(taskType, prompt):
+  rule = rules[taskType] or rules["coding"]
+  response = call(rule.primary_model, prompt)
+  if response.confidence < rule.confidence_threshold:
+    response = call(rule.fallback_model, prompt)
+  return response`}
+            </pre>
           </div>
         </section>
 

@@ -17,8 +17,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MODELS, STRATEGIES, TASK_TYPES } from "@/lib/clawbench/constants";
-import { Edit, Eye, FlaskConical, Plus, Trash2 } from "lucide-react";
+import { Edit, Eye, FileDown, FlaskConical, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { RoutingMdDialog } from "@/components/clawbench/routing-md-dialog";
 
 export const Route = createFileRoute("/rules")({ component: RulesPage });
 
@@ -27,6 +28,7 @@ function RulesPage() {
   const { data: rules = [] } = useQuery({ queryKey: ["rules"], queryFn: getRoutingRules });
   const [editing, setEditing] = useState<any | null>(null);
   const [open, setOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
 
   const save = useMutation({
     mutationFn: saveRoutingRule,
@@ -64,10 +66,22 @@ function RulesPage() {
         title="Routing Rules"
         subtitle="Convert eval winners into production routing decisions."
         actions={
-          <Button onClick={openNew} size="sm" className="gap-2"><Plus className="h-4 w-4" /> New rule</Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setExportOpen(true)}
+              size="sm"
+              variant="outline"
+              className="gap-2"
+              disabled={rules.length === 0}
+              title={rules.length === 0 ? "No rules yet — save a rule first" : undefined}
+            >
+              <FileDown className="h-4 w-4" /> Export routing.md
+            </Button>
+            <Button onClick={openNew} size="sm" className="gap-2"><Plus className="h-4 w-4" /> New rule</Button>
+          </div>
         }
       />
-      <div className="p-6">
+      <div className="p-6 space-y-4">
         <div className="overflow-x-auto rounded-lg border border-border bg-card">
           <table className="w-full text-xs">
             <thead className="bg-muted/30 text-left text-[11px] uppercase tracking-wider text-muted-foreground">
@@ -108,7 +122,19 @@ function RulesPage() {
             </tbody>
           </table>
         </div>
+
+        {rules.length === 0 ? (
+          <div className="rounded-md border border-dashed border-border bg-card/40 p-6 text-center text-xs text-muted-foreground">
+            No routing rules yet. Run an eval, save the winner as a rule, then export <code className="font-mono">routing.md</code> for your agent.
+          </div>
+        ) : (
+          <p className="text-[11px] text-muted-foreground">
+            Tip: click <span className="font-medium text-foreground">Export routing.md</span> to download these rules as a markdown file your coding agent can follow.
+          </p>
+        )}
       </div>
+
+      <RoutingMdDialog open={exportOpen} onOpenChange={setExportOpen} rules={rules as any} />
 
       <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setEditing(null); }}>
         <DialogContent className="max-w-lg">
