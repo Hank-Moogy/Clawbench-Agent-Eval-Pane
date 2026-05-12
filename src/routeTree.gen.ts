@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as RunRouteImport } from './routes/run'
 import { Route as RulesRouteImport } from './routes/rules'
 import { Route as ObservabilityRouteImport } from './routes/observability'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
@@ -22,6 +23,11 @@ import { Route as EvalTaskIdRouteImport } from './routes/eval.$taskId'
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RunRoute = RunRouteImport.update({
+  id: '/run',
+  path: '/run',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RulesRoute = RulesRouteImport.update({
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof LeaderboardRoute
   '/observability': typeof ObservabilityRoute
   '/rules': typeof RulesRoute
+  '/run': typeof RunRoute
   '/settings': typeof SettingsRoute
   '/eval/$taskId': typeof EvalTaskIdRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/observability': typeof ObservabilityRoute
   '/rules': typeof RulesRoute
+  '/run': typeof RunRoute
   '/settings': typeof SettingsRoute
   '/eval/$taskId': typeof EvalTaskIdRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/leaderboard': typeof LeaderboardRoute
   '/observability': typeof ObservabilityRoute
   '/rules': typeof RulesRoute
+  '/run': typeof RunRoute
   '/settings': typeof SettingsRoute
   '/eval/$taskId': typeof EvalTaskIdRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/observability'
     | '/rules'
+    | '/run'
     | '/settings'
     | '/eval/$taskId'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/observability'
     | '/rules'
+    | '/run'
     | '/settings'
     | '/eval/$taskId'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/observability'
     | '/rules'
+    | '/run'
     | '/settings'
     | '/eval/$taskId'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   LeaderboardRoute: typeof LeaderboardRoute
   ObservabilityRoute: typeof ObservabilityRoute
   RulesRoute: typeof RulesRoute
+  RunRoute: typeof RunRoute
   SettingsRoute: typeof SettingsRoute
   EvalTaskIdRoute: typeof EvalTaskIdRoute
 }
@@ -154,6 +167,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/run': {
+      id: '/run'
+      path: '/run'
+      fullPath: '/run'
+      preLoaderRoute: typeof RunRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rules': {
@@ -223,9 +243,20 @@ const rootRouteChildren: RootRouteChildren = {
   LeaderboardRoute: LeaderboardRoute,
   ObservabilityRoute: ObservabilityRoute,
   RulesRoute: RulesRoute,
+  RunRoute: RunRoute,
   SettingsRoute: SettingsRoute,
   EvalTaskIdRoute: EvalTaskIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
