@@ -1,6 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
-import { generateMockRun, pickWinner, type MockRun } from "@/lib/clawbench/mock-generator";
+import { pickWinner, type MockRun } from "@/lib/clawbench/mock-generator";
 import { DEFAULT_RULES, MODELS, type ModelId, type Strategy, type TaskType } from "@/lib/clawbench/constants";
+import { isMockMode } from "@/lib/clawbench/mock-mode";
+import {
+  getMockBundle,
+  getMockRoutingRules,
+  listMockBundles,
+  listMockRuns,
+  pushAdhocMockBundle,
+} from "@/lib/clawbench/mock-fixtures";
 
 export interface RunEvalPayload {
   prompt: string;
@@ -60,6 +68,16 @@ export async function testConnection(url: string, _mode?: "mock" | "real") {
 }
 
 export async function runEval(payload: RunEvalPayload): Promise<{ taskId: string }> {
+  if (isMockMode()) {
+    const bundle = pushAdhocMockBundle(
+      payload.prompt,
+      payload.task_type,
+      payload.strategy,
+      payload.selected_models,
+    );
+    return { taskId: bundle.task.id };
+  }
+
   const settings = await getSettings();
   const mode = settings.api_mode;
 
@@ -103,6 +121,15 @@ export async function runEval(payload: RunEvalPayload): Promise<{ taskId: string
 }
 
 export async function getEvalById(id: string) {
+  if (isMockMode()) {
+    const b = getMockBundle(id);
+    if (b) {
+      return {
+        task: b.task,
+        runs: [...b.runs].sort((x, y) => Number(y.is_winner) - Number(x.is_winner)),
+      };
+    }
+  }
   const { data: task } = await supabase.from("eval_tasks").select("*").eq("id", id).maybeSingle();
   const { data: runs } = await supabase
     .from("eval_runs")
