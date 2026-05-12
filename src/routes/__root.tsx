@@ -17,8 +17,10 @@ import { Toaster } from "@/components/ui/sonner";
 import { ensureSeed } from "@/lib/api/clawbench";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut } from "lucide-react";
+import { LogOut, FlaskConical } from "lucide-react";
+import { useMockMode } from "@/lib/clawbench/mock-mode";
 
 function NotFoundComponent() {
   return (
@@ -143,11 +145,8 @@ function RootComponent() {
                   <span className="text-muted-foreground">/</span>
                   <span className="text-muted-foreground">Eval control plane</span>
                 </div>
-                <div className="ml-auto flex items-center gap-2">
-                  <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
-                    <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                    Real mode
-                  </Badge>
+                <div className="ml-auto flex items-center gap-3">
+                  <MockModeToggle />
                   <span className="hidden text-xs text-muted-foreground sm:inline">{session.user.email}</span>
                   <Button
                     variant="ghost"
