@@ -1,67 +1,36 @@
-# ClawBench — Mocked Inference, Real App Backend
+## Goal
 
-Only OpenClaw/Nebius model execution is mocked. Everything else (persistence, history, rules, leaderboard, observability, exports, settings) is real, backed by Lovable Cloud (Supabase). The app should feel like a working product, not a static mockup.
+1. On `/rules`, generate a `routing.md` file from the saved rules — copyable and downloadable — so the user can hand it to their coding agent as routing instructions.
+2. Update the landing page to advertise this as the final step: "Export a routing.md your agent reads natively."
 
-## Backend: Lovable Cloud schema
+Both will work cleanly: rules already live in the `routing_rules` table and load via `getRoutingRules()`.
 
-Enable Lovable Cloud and create migrations for:
+## What gets built
 
-- `eval_tasks` — id, prompt, task_type, strategy, selected_models (jsonb), require_json, timeout_seconds, max_tokens, mode, created_at
-- `eval_runs` — id, task_id (fk → eval_tasks on delete cascade), model_id, model_display_name, output, quality_score, correctness, completeness, actionability, format_reliability, agent_utility, efficiency_score, latency_ms, input_tokens, output_tokens, total_tokens, estimated_cost, cost_per_quality_point, reliability_status, json_valid, is_winner, judge_explanation, recommendation_reason, status, created_at
-- `routing_rules` — id, task_type, primary_model, fallback_model, strategy, confidence_threshold, escalation_condition, supporting_eval_count, created_at, updated_at
-- `dataset_exports` — id, name, format, selected_run_ids (jsonb), jsonl_preview, example_count, avg_quality_score, created_at
-- `app_settings` — id, api_mode, agent_runner_api_url, model_display_names (jsonb), created_at, updated_at
+### 1. Markdown generator
+New file `src/lib/clawbench/routing-markdown.ts` — pure function `buildRoutingMarkdown(rules, models)`:
+- Header + short intro telling the agent how to use the file.
+- Summary table at the top: task type → primary → fallback.
+- One section per task type with: primary model, fallback model, strategy, confidence threshold, escalation condition, supporting eval count.
+- "Decision algorithm" footer explaining the routing logic in plain steps (try primary → if confidence < threshold or escalation condition matches → fall back).
+- Generated timestamp + ClawBench attribution.
 
-No-auth prototype: include a nullable `user_id uuid` column on each table for future use, and use permissive RLS (public read/write) for now so the demo works without login. Schema is forward-compatible with auth.
+### 2. Routing Rules page (`src/routes/rules.tsx`)
+- New header action **"Export routing.md"** next to "New rule".
+- Opens a dialog showing the rendered markdown in a scrollable code block with **Copy** and **Download `routing.md`** buttons. Download uses a `Blob` + temporary `<a>` link — no new deps.
+- Disabled (with tooltip "No rules yet") when `rules.length === 0`.
+- Empty-state hint under the table when there are no rules: "Run an eval, save the winner as a rule, then export this file for your agent."
 
-Seed on first load (handled by the mock API layer when tables are empty): 12 realistic `eval_tasks` + matching `eval_runs` across all 6 task types with realistic per-model distributions (Kimi 4.1–4.8 / 7–11s / $0.0025–0.0045 / 90% JSON; DeepSeek 4.4–4.9 / 12–22s / $0.005–0.010 / 85%; Llama 3.5–4.3 / 4–8s / $0.0015–0.003 / 80%), a few failed/timeout runs, and the 5 default routing rules.
+### 3. Landing page (`src/routes/index.tsx`)
+- Update **Step 3** in "How it works" from a generic "Ship a routing policy" copy to explicitly mention the `routing.md` export and the agent-paste workflow.
+- Add a new **"What you get"** sub-section (or a fourth feature card) with a small mock of a `routing.md` snippet so visitors immediately understand the deliverable.
+- Tweak hero subcopy to mention "exports a `routing.md` your coding agent reads natively."
 
-## API abstraction (`src/lib/api/clawbench.ts`)
+### 4. New component
+`src/components/clawbench/routing-md-dialog.tsx` — dialog with copy + download, reused only on `/rules`.
 
-Single typed module the UI calls. Branches on `api_mode` from `app_settings`:
+## Out of scope (ask if you want it)
 
-- `runEval(payload)`
-  - mock: generate per-model outputs + metrics locally, compute winner per strategy, insert one `eval_tasks` row + N `eval_runs` rows, mark winner with `is_winner=true`, return `{ taskId, runs }`.
-  - real: `POST ${agent_runner_api_url}/run-eval` expecting the same shape, then persist results identically.
-- `getEvalHistory(filters)`, `getEvalById(id)`, `getRunsForTask(id)`
-- `getLeaderboard()` — aggregates from `eval_runs` grouped by model + task_type (eval_count, win_rate, avg quality/correctness/actionability/format_reliability/latency/cost/efficiency, json_validity_rate, failure_rate).
-- `getObservability()` — totals, averages, runs-over-time, task distribution, per-model latency/cost/quality, scatter data.
-- `getRoutingRules()`, `saveRoutingRule(rule)` (insert/update), `deleteRoutingRule(id)`, `getSupportingEvals(task_type, model)`
-- `exportDataset({ runIds, format, name })` — fetches selected winning runs + their tasks, builds JSONL chat-format text, inserts a `dataset_exports` row, returns `{ jsonl, exportId }`.
-- `getSettings()`, `saveSettings(patch)`, `testConnection(url)` — mock returns OK, real does `GET ${url}/health`.
-
-All aggregations done in SQL (RPC or views) where possible; client-side fallback for chart shaping. No static mock arrays read by UI components — every screen reads from Cloud.
-
-## Mock inference generator
-
-Pure function `generateMockRun(model, task_type, strategy, prompt)` returning realistic output text + metrics within the per-model ranges above. Winner picker per strategy:
-- best quality → max quality_score
-- lowest latency → min latency_ms (completed only)
-- lowest cost → min estimated_cost (completed only)
-- best balance → max efficiency_score = `quality / (cost*1000 + latency_s*0.05)` scaled 0–100
-- best structured → max format_reliability among json_valid runs
-
-Generates judge_explanation + recommendation_reason strings tailored to the winner.
-
-## localStorage usage (limited)
-
-Only for ephemeral UI: sidebar collapsed, theme, current draft prompt. Never for eval data, rules, exports, or settings.
-
-## UI screens (unchanged from prior plan, now backed by Cloud)
-
-1. **Run Eval** — prompt, task type, strategy, model multi-select, advanced accordion. On submit: 2–4s simulated progress UI, calls `runEval`, navigates to `/eval/$taskId` on success.
-2. **Eval Result Detail** (`/eval/$taskId`) — loads task + runs from DB. Winner card, per-model comparison cards, full metrics table with actions, tabbed output panels (Mark preferred / Flag), radar+bar score breakdown with judge explanation, routing recommendation card with Save Routing Rule (writes to DB), Export Winning Run, Re-run, Back.
-3. **Eval History** — server-side filtered list from `eval_tasks` joined with winning `eval_runs`. Actions: view, re-run (clones task), export winning, create rule. Empty state.
-4. **Leaderboard** — top metric cards + grouped table + 4 charts, all from real aggregations.
-5. **Routing Rules** — full CRUD against `routing_rules`. Edit/create modal. "View supporting evals" deep-links to History filtered by task_type + model. "Test rule" runs a quick mocked dry-run.
-6. **Observability** — 10 KPI cards + 8 charts computed from `eval_runs`. Insights panel renders narrative bullets derived from the actual aggregates (not hardcoded).
-7. **Dataset Export** — filterable table of winning runs. Format selector (JSONL chat / CSV / Raw JSON). Live preview built from selection. Buttons: Export selected (writes `dataset_exports` row), Copy JSONL, Download `.jsonl` via Blob, Mark training-ready. Dataset metrics summary.
-8. **Settings** — reads/writes `app_settings`. API mode toggle (Mock/Real), Agent Runner URL with Save + Test connection (with status display), connection status card with last test timestamp, security notes panel, editable model display names that propagate everywhere via the `model_display_names` map.
-
-## Tech notes
-
-- TanStack Start file routes; sidebar layout in `__root.tsx` via shadcn `Sidebar` (collapsible, current-route highlighting).
-- TanStack Query for all DB reads with sensible invalidation on writes.
-- Recharts for charts; shadcn primitives for UI.
-- Aggregations via Postgres views/RPCs created in the migration where it simplifies the leaderboard/observability queries.
-- Switching `api_mode` to `real` later requires zero UI changes — only the `runEval` branch hits the Cloudflare Tunnel endpoint.
+- Persisting the generated markdown in the DB.
+- Per-rule selection / checkboxes — export currently includes all rules.
+- A public route serving raw `routing.md` (possible via a server route, but not needed for the copy/paste flow).
