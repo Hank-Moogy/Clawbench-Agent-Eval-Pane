@@ -28,6 +28,7 @@ function RulesPage() {
   const { data: rules = [] } = useQuery({ queryKey: ["rules"], queryFn: getRoutingRules });
   const [editing, setEditing] = useState<any | null>(null);
   const [open, setOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
 
   const save = useMutation({
     mutationFn: saveRoutingRule,
