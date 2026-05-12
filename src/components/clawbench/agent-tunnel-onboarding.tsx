@@ -159,6 +159,24 @@ export function AgentTunnelOnboarding() {
             </p>
           </div>
 
+          <div className="mt-3">
+            <Label className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground">
+              <Link2 className="h-3 w-3" /> Tunnel URL
+            </Label>
+            <Input
+              type="url"
+              value={tunnelUrl}
+              onChange={(e) => saveTunnel(e.target.value)}
+              onBlur={persistTunnel}
+              placeholder="https://your-tunnel.trycloudflare.com"
+              className="mt-1.5 font-mono text-xs"
+              autoComplete="off"
+            />
+            <p className="mt-1 text-[10px] text-muted-foreground">
+              Public HTTPS URL from your tunnel (cloudflared, ngrok, bore). ClawBench will POST <code className="font-mono">/run-eval</code> here. Saved to your Settings on blur.
+            </p>
+          </div>
+
           <div className="relative mt-3">
             <pre className="max-h-72 overflow-auto rounded-md border border-border bg-background p-3 font-mono text-[11px] leading-relaxed text-foreground">
 {snippet}
