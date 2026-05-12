@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Check, Copy, Eye, EyeOff, KeyRound, Terminal, X } from "lucide-react";
+import { Check, Copy, Eye, EyeOff, KeyRound, Link2, Terminal, X } from "lucide-react";
 import { toast } from "sonner";
+import { saveSettings } from "@/lib/api/clawbench";
 
 const STORAGE_KEY = "clawbench.nebius_api_key";
+const TUNNEL_KEY = "clawbench.tunnel_url";
 
 function buildSnippet(apiKey: string) {
   const keyLine = apiKey
@@ -48,10 +50,14 @@ export function AgentTunnelOnboarding() {
   const [copied, setCopied] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const [showKey, setShowKey] = useState(false);
+  const [tunnelUrl, setTunnelUrl] = useState("");
 
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
+    if (typeof window === "undefined") return;
+    const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) setApiKey(stored);
+    const t = localStorage.getItem(TUNNEL_KEY);
+    if (t) setTunnelUrl(t);
   }, []);
 
   const saveKey = (v: string) => {
@@ -59,6 +65,25 @@ export function AgentTunnelOnboarding() {
     if (typeof window !== "undefined") {
       if (v) localStorage.setItem(STORAGE_KEY, v);
       else localStorage.removeItem(STORAGE_KEY);
+    }
+  };
+
+  const saveTunnel = (v: string) => {
+    setTunnelUrl(v);
+    if (typeof window !== "undefined") {
+      if (v) localStorage.setItem(TUNNEL_KEY, v);
+      else localStorage.removeItem(TUNNEL_KEY);
+    }
+  };
+
+  const persistTunnel = async () => {
+    const trimmed = tunnelUrl.trim().replace(/\/$/, "");
+    if (!trimmed) return;
+    try {
+      await saveSettings({ agent_runner_api_url: trimmed });
+      toast.success("Tunnel URL saved");
+    } catch {
+      toast.error("Failed to save tunnel URL");
     }
   };
 
@@ -131,6 +156,24 @@ export function AgentTunnelOnboarding() {
                 studio.nebius.com
               </a>
               .
+            </p>
+          </div>
+
+          <div className="mt-3">
+            <Label className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground">
+              <Link2 className="h-3 w-3" /> Tunnel URL
+            </Label>
+            <Input
+              type="url"
+              value={tunnelUrl}
+              onChange={(e) => saveTunnel(e.target.value)}
+              onBlur={persistTunnel}
+              placeholder="https://your-tunnel.trycloudflare.com"
+              className="mt-1.5 font-mono text-xs"
+              autoComplete="off"
+            />
+            <p className="mt-1 text-[10px] text-muted-foreground">
+              Public HTTPS URL from your tunnel (cloudflared, ngrok, bore). ClawBench will POST <code className="font-mono">/run-eval</code> here. Saved to your Settings on blur.
             </p>
           </div>
 
