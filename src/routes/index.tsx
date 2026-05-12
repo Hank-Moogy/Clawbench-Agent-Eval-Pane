@@ -74,7 +74,8 @@ function LandingPage() {
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
               ClawBench benchmarks your agent across open-weight models on Nebius, scores every
-              output, and generates routing rules so the cheapest capable model handles each task.
+              output, and exports a <code className="rounded bg-muted px-1 py-0.5 font-mono text-[0.85em]">routing.md</code> your
+              coding agent reads natively to pick the best model per task.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link to="/auth">
