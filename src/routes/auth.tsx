@@ -18,7 +18,7 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/" });
+      if (data.session) navigate({ to: "/run" });
     });
   }, [navigate]);
 
@@ -38,7 +38,7 @@ function AuthPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
-      navigate({ to: "/" });
+      navigate({ to: "/run" });
     } catch (err) {
       toast.error((err as Error).message);
     } finally {
