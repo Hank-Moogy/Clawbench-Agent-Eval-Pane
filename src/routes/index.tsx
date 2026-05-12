@@ -78,9 +78,12 @@ function LandingPage() {
               <Sparkles className="h-3 w-3" /> Powered by Nebius Token Factory
             </span>
             <h1 className="mt-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-              Pick the right model for your coding agent.
+              Optimise your Agent's inference
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
+            <p className="mx-auto mt-5 max-w-2xl text-lg font-medium text-foreground sm:text-xl">
+              Pick the right open source model based on your task.
+            </p>
+            <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
               ClawBench benchmarks your agent across open-weight models on Nebius, scores every
               output, and exports a <code className="rounded bg-muted px-1 py-0.5 font-mono text-[0.85em]">routing.md</code> your
               coding agent reads natively to pick the best model per task.
