@@ -3,10 +3,12 @@ import {
   Outlet,
   createRootRouteWithContext,
   useRouter,
+  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
 
 import appCss from "../styles.css?url";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
@@ -14,9 +16,9 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { ensureSeed } from "@/lib/api/clawbench";
 import { Badge } from "@/components/ui/badge";
-import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn, UserButton } from "@clerk/clerk-react";
-
-const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string;
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { LogOut } from "lucide-react";
 
 function NotFoundComponent() {
   return (
@@ -99,52 +101,74 @@ function SeedRunner() {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
-  const isAuthRoute =
-    router.state.location.pathname.startsWith("/sign-in") ||
-    router.state.location.pathname.startsWith("/sign-up");
+  const navigate = useNavigate();
+  const [session, setSession] = useState<Session | null>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  const pathname = router.state.location.pathname;
+  const isAuthRoute = pathname.startsWith("/auth");
+
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setLoaded(true);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (loaded && !session && !isAuthRoute) {
+      navigate({ to: "/auth" });
+    }
+  }, [loaded, session, isAuthRoute, navigate]);
 
   return (
-    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} afterSignOutUrl="/sign-in">
-      <QueryClientProvider client={queryClient}>
-        {isAuthRoute ? (
-          <Outlet />
-        ) : (
-          <>
-            <SignedOut>
-              <RedirectToSignIn />
-            </SignedOut>
-            <SignedIn>
-              <SidebarProvider>
-                <div className="flex min-h-screen w-full bg-background text-foreground">
-                  <AppSidebar />
-                  <SidebarInset>
-                    <header className="sticky top-0 z-20 flex h-12 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur">
-                      <SidebarTrigger />
-                      <div className="flex items-center gap-2 text-sm font-medium">
-                        ClawBench
-                        <span className="text-muted-foreground">/</span>
-                        <span className="text-muted-foreground">Eval control plane</span>
-                      </div>
-                      <div className="ml-auto flex items-center gap-2">
-                        <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
-                          <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                          Real mode
-                        </Badge>
-                        <UserButton afterSignOutUrl="/sign-in" />
-                      </div>
-                    </header>
-                    <main className="flex-1">
-                      <Outlet />
-                    </main>
-                  </SidebarInset>
+    <QueryClientProvider client={queryClient}>
+      {isAuthRoute ? (
+        <Outlet />
+      ) : !loaded || !session ? (
+        <div className="flex min-h-screen items-center justify-center bg-background" />
+      ) : (
+        <SidebarProvider>
+          <div className="flex min-h-screen w-full bg-background text-foreground">
+            <AppSidebar />
+            <SidebarInset>
+              <header className="sticky top-0 z-20 flex h-12 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur">
+                <SidebarTrigger />
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  ClawBench
+                  <span className="text-muted-foreground">/</span>
+                  <span className="text-muted-foreground">Eval control plane</span>
                 </div>
-                <SeedRunner />
-              </SidebarProvider>
-            </SignedIn>
-            <Toaster richColors position="top-right" />
-          </>
-        )}
-      </QueryClientProvider>
-    </ClerkProvider>
+                <div className="ml-auto flex items-center gap-2">
+                  <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
+                    <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                    Real mode
+                  </Badge>
+                  <span className="hidden text-xs text-muted-foreground sm:inline">{session.user.email}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={async () => {
+                      await supabase.auth.signOut();
+                      navigate({ to: "/auth" });
+                    }}
+                    className="gap-1.5"
+                  >
+                    <LogOut className="h-3.5 w-3.5" /> Sign out
+                  </Button>
+                </div>
+              </header>
+              <main className="flex-1">
+                <Outlet />
+              </main>
+            </SidebarInset>
+          </div>
+          <SeedRunner />
+        </SidebarProvider>
+      )}
+      <Toaster richColors position="top-right" />
+    </QueryClientProvider>
   );
 }
