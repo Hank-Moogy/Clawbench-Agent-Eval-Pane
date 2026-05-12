@@ -122,7 +122,19 @@ function RulesPage() {
             </tbody>
           </table>
         </div>
+
+        {rules.length === 0 ? (
+          <div className="rounded-md border border-dashed border-border bg-card/40 p-6 text-center text-xs text-muted-foreground">
+            No routing rules yet. Run an eval, save the winner as a rule, then export <code className="font-mono">routing.md</code> for your agent.
+          </div>
+        ) : (
+          <p className="text-[11px] text-muted-foreground">
+            Tip: click <span className="font-medium text-foreground">Export routing.md</span> to download these rules as a markdown file your coding agent can follow.
+          </p>
+        )}
       </div>
+
+      <RoutingMdDialog open={exportOpen} onOpenChange={setExportOpen} rules={rules as any} />
 
       <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setEditing(null); }}>
         <DialogContent className="max-w-lg">
