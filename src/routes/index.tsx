@@ -103,6 +103,7 @@ function RunEvalPage() {
 
       <div className="grid gap-6 p-6 lg:grid-cols-[1fr_360px]">
         <div className="space-y-5">
+          <AgentTunnelOnboarding />
           <div className="rounded-lg border border-border bg-card p-5">
             <Label className="text-xs uppercase tracking-wider text-muted-foreground">Prompt</Label>
             <Textarea
