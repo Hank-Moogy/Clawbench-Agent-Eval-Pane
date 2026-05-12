@@ -17,8 +17,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MODELS, STRATEGIES, TASK_TYPES } from "@/lib/clawbench/constants";
-import { Edit, Eye, FlaskConical, Plus, Trash2 } from "lucide-react";
+import { Edit, Eye, FileDown, FlaskConical, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { RoutingMdDialog } from "@/components/clawbench/routing-md-dialog";
 
 export const Route = createFileRoute("/rules")({ component: RulesPage });
 
