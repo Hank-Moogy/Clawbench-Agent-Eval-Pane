@@ -14,6 +14,9 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { ensureSeed } from "@/lib/api/clawbench";
 import { Badge } from "@/components/ui/badge";
+import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn, UserButton } from "@clerk/clerk-react";
+
+const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string;
 
 function NotFoundComponent() {
   return (
@@ -95,34 +98,53 @@ function SeedRunner() {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  const isAuthRoute =
+    router.state.location.pathname.startsWith("/sign-in") ||
+    router.state.location.pathname.startsWith("/sign-up");
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <SidebarProvider>
-        <div className="flex min-h-screen w-full bg-background text-foreground">
-          <AppSidebar />
-          <SidebarInset>
-            <header className="sticky top-0 z-20 flex h-12 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur">
-              <SidebarTrigger />
-              <div className="flex items-center gap-2 text-sm font-medium">
-                ClawBench
-                <span className="text-muted-foreground">/</span>
-                <span className="text-muted-foreground">Eval control plane</span>
-              </div>
-              <div className="ml-auto flex items-center gap-2">
-                <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
-                  <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                  Real mode
-                </Badge>
-              </div>
-            </header>
-            <main className="flex-1">
-              <Outlet />
-            </main>
-          </SidebarInset>
-        </div>
-        <Toaster richColors position="top-right" />
-        <SeedRunner />
-      </SidebarProvider>
-    </QueryClientProvider>
+    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} afterSignOutUrl="/sign-in">
+      <QueryClientProvider client={queryClient}>
+        {isAuthRoute ? (
+          <Outlet />
+        ) : (
+          <>
+            <SignedOut>
+              <RedirectToSignIn />
+            </SignedOut>
+            <SignedIn>
+              <SidebarProvider>
+                <div className="flex min-h-screen w-full bg-background text-foreground">
+                  <AppSidebar />
+                  <SidebarInset>
+                    <header className="sticky top-0 z-20 flex h-12 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur">
+                      <SidebarTrigger />
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        ClawBench
+                        <span className="text-muted-foreground">/</span>
+                        <span className="text-muted-foreground">Eval control plane</span>
+                      </div>
+                      <div className="ml-auto flex items-center gap-2">
+                        <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
+                          <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                          Real mode
+                        </Badge>
+                        <UserButton afterSignOutUrl="/sign-in" />
+                      </div>
+                    </header>
+                    <main className="flex-1">
+                      <Outlet />
+                    </main>
+                  </SidebarInset>
+                </div>
+                <SeedRunner />
+              </SidebarProvider>
+            </SignedIn>
+            <Toaster richColors position="top-right" />
+          </>
+        )}
+      </QueryClientProvider>
+    </ClerkProvider>
   );
 }
