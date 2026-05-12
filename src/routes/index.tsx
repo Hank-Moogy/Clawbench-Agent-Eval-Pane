@@ -72,7 +72,7 @@ function LandingPage() {
             <img
               src={clawbenchHero}
               alt="ClawBench"
-              className="mx-auto mb-8 h-28 w-auto sm:h-36"
+              className="mx-auto mb-8 h-44 w-auto sm:h-56 md:h-64"
             />
             <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               <Sparkles className="h-3 w-3" /> Powered by Nebius Token Factory
