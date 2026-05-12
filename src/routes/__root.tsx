@@ -17,8 +17,10 @@ import { Toaster } from "@/components/ui/sonner";
 import { ensureSeed } from "@/lib/api/clawbench";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut } from "lucide-react";
+import { LogOut, FlaskConical } from "lucide-react";
+import { useMockMode } from "@/lib/clawbench/mock-mode";
 
 function NotFoundComponent() {
   return (
@@ -143,11 +145,8 @@ function RootComponent() {
                   <span className="text-muted-foreground">/</span>
                   <span className="text-muted-foreground">Eval control plane</span>
                 </div>
-                <div className="ml-auto flex items-center gap-2">
-                  <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
-                    <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                    Real mode
-                  </Badge>
+                <div className="ml-auto flex items-center gap-3">
+                  <MockModeToggle />
                   <span className="hidden text-xs text-muted-foreground sm:inline">{session.user.email}</span>
                   <Button
                     variant="ghost"
@@ -172,5 +171,31 @@ function RootComponent() {
       )}
       <Toaster richColors position="top-right" />
     </QueryClientProvider>
+  );
+}
+
+function MockModeToggle() {
+  const [on, setOn] = useMockMode();
+  const { queryClient } = Route.useRouteContext();
+  return (
+    <div className="flex items-center gap-2 rounded-md border border-border bg-card px-2.5 py-1">
+      <FlaskConical className={`h-3.5 w-3.5 ${on ? "text-primary" : "text-muted-foreground"}`} />
+      <span className="hidden text-[11px] uppercase tracking-wider text-muted-foreground sm:inline">
+        Mock data
+      </span>
+      <Switch
+        checked={on}
+        onCheckedChange={(v) => {
+          setOn(v);
+          queryClient.invalidateQueries();
+        }}
+        aria-label="Toggle mock data mode"
+      />
+      {on && (
+        <Badge variant="outline" className="border-primary/40 bg-primary/10 text-[10px] text-primary">
+          Demo
+        </Badge>
+      )}
+    </div>
   );
 }
