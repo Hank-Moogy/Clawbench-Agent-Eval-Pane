@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Check, Copy, Eye, EyeOff, KeyRound, Terminal, X } from "lucide-react";
+import { Check, Copy, Eye, EyeOff, KeyRound, Link2, Terminal, X } from "lucide-react";
 import { toast } from "sonner";
+import { saveSettings } from "@/lib/api/clawbench";
 
 const STORAGE_KEY = "clawbench.nebius_api_key";
+const TUNNEL_KEY = "clawbench.tunnel_url";
 
 function buildSnippet(apiKey: string) {
   const keyLine = apiKey
