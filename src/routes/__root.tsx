@@ -107,6 +107,8 @@ function RootComponent() {
 
   const pathname = router.state.location.pathname;
   const isAuthRoute = pathname.startsWith("/auth");
+  const isLandingRoute = pathname === "/";
+  const isPublicRoute = isAuthRoute || isLandingRoute;
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
@@ -118,14 +120,14 @@ function RootComponent() {
   }, []);
 
   useEffect(() => {
-    if (loaded && !session && !isAuthRoute) {
+    if (loaded && !session && !isPublicRoute) {
       navigate({ to: "/auth" });
     }
-  }, [loaded, session, isAuthRoute, navigate]);
+  }, [loaded, session, isPublicRoute, navigate]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      {isAuthRoute ? (
+      {isPublicRoute ? (
         <Outlet />
       ) : !loaded || !session ? (
         <div className="flex min-h-screen items-center justify-center bg-background" />
