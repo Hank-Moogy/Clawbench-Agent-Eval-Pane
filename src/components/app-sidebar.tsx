@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 
 const items = [
-  { title: "Run Eval", url: "/", icon: PlayCircle },
+  { title: "Run Eval", url: "/run", icon: PlayCircle },
   { title: "Eval History", url: "/history", icon: History },
   { title: "Leaderboard", url: "/leaderboard", icon: Trophy },
   { title: "Routing Rules", url: "/rules", icon: RouteIcon },
@@ -35,7 +35,7 @@ const items = [
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isActive = (url: string) => (url === "/" ? pathname === "/" || pathname.startsWith("/eval") : pathname.startsWith(url));
+  const isActive = (url: string) => (url === "/run" ? pathname === "/run" || pathname.startsWith("/eval") : pathname.startsWith(url));
 
   return (
     <Sidebar collapsible="icon">
