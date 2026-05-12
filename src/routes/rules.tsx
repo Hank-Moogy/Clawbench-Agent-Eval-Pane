@@ -66,10 +66,22 @@ function RulesPage() {
         title="Routing Rules"
         subtitle="Convert eval winners into production routing decisions."
         actions={
-          <Button onClick={openNew} size="sm" className="gap-2"><Plus className="h-4 w-4" /> New rule</Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setExportOpen(true)}
+              size="sm"
+              variant="outline"
+              className="gap-2"
+              disabled={rules.length === 0}
+              title={rules.length === 0 ? "No rules yet — save a rule first" : undefined}
+            >
+              <FileDown className="h-4 w-4" /> Export routing.md
+            </Button>
+            <Button onClick={openNew} size="sm" className="gap-2"><Plus className="h-4 w-4" /> New rule</Button>
+          </div>
         }
       />
-      <div className="p-6">
+      <div className="p-6 space-y-4">
         <div className="overflow-x-auto rounded-lg border border-border bg-card">
           <table className="w-full text-xs">
             <thead className="bg-muted/30 text-left text-[11px] uppercase tracking-wider text-muted-foreground">
