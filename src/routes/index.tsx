@@ -13,6 +13,7 @@ import {
   Trophy,
   FileDown,
 } from "lucide-react";
+import clawbenchLogo from "@/assets/clawbench-logo.png";
 
 const Check = () => <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />;
 
@@ -42,11 +43,12 @@ function LandingPage() {
       <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
           <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <Gauge className="h-4 w-4" />
-            </div>
-            <div>
-              <div className="text-sm font-semibold tracking-tight">ClawBench</div>
+            <img
+              src={clawbenchLogo}
+              alt="ClawBench"
+              className="h-8 w-auto"
+            />
+            <div className="hidden sm:block">
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
                 Agent eval control plane
               </div>
@@ -69,6 +71,11 @@ function LandingPage() {
         {/* Hero */}
         <section className="border-b border-border">
           <div className="mx-auto max-w-6xl px-6 py-20 text-center">
+            <img
+              src={clawbenchLogo}
+              alt="ClawBench"
+              className="mx-auto mb-8 h-20 w-auto sm:h-24"
+            />
             <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               <Sparkles className="h-3 w-3" /> Powered by Nebius Token Factory
             </span>
