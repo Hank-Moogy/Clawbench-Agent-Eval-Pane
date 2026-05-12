@@ -173,3 +173,29 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+
+function MockModeToggle() {
+  const [on, setOn] = useMockMode();
+  const { queryClient } = Route.useRouteContext();
+  return (
+    <div className="flex items-center gap-2 rounded-md border border-border bg-card px-2.5 py-1">
+      <FlaskConical className={`h-3.5 w-3.5 ${on ? "text-primary" : "text-muted-foreground"}`} />
+      <span className="hidden text-[11px] uppercase tracking-wider text-muted-foreground sm:inline">
+        Mock data
+      </span>
+      <Switch
+        checked={on}
+        onCheckedChange={(v) => {
+          setOn(v);
+          queryClient.invalidateQueries();
+        }}
+        aria-label="Toggle mock data mode"
+      />
+      {on && (
+        <Badge variant="outline" className="border-primary/40 bg-primary/10 text-[10px] text-primary">
+          Demo
+        </Badge>
+      )}
+    </div>
+  );
+}
